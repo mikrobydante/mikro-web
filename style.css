@@ -200,7 +200,7 @@ p {
 .gallery img {
   width: 180px;
   height: 180px; /* 🔥 IMPORTANTE para alineación */
-  object-fit: cover;
+ object-fit: contain;
 
   border-radius: 16px;
   background: #f0f0f0;
