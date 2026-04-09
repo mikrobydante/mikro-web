@@ -382,7 +382,29 @@ p {
 
 .card img,
 .card video {
+    opacity: 0.8;
   width: 120px;
   height: auto;
   display: block;
+}
+
+.top-nav {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  gap: 20px;
+}
+
+.top-nav a {
+  text-decoration: none;
+  color: #888;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.top-nav a:hover {
+  color: #000;
 }
