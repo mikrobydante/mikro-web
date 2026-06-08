@@ -408,3 +408,34 @@ p {
 .top-nav a:hover {
   color: #000;
 }
+
+
+body,
+.hero,
+.catalog,
+.demo-section,
+.info-section,
+#works,
+#about,
+#contact {
+  background: #FFD9C0 !important;
+}
+
+.hero-container,
+.catalog-container,
+.card,
+.package,
+.info-card {
+  background: rgba(255, 225, 200, 0.85) !important;
+}
+
+p,
+.description,
+.subtitle {
+  color: #6f584a !important;
+}
+
+h1,
+h2 {
+  color: #3b210d !important;
+}
