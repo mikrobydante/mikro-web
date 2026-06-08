@@ -1,31 +1,24 @@
 // ✅ src/modules/gadgetsSystem.js
-// System to manage "addon-" gadgets inside the GLB
-// Each category (shirt, pants, shoes...) can have multiple models and cycles between them.
-
 import { gsap } from 'gsap';
 
-// Internal registry
 const gadgets = {};
 let panel;
 
 export function initGadgets(scene) {
   console.log('🎒 Initializing gadget system...');
 
-  // 1️⃣ Find all addon-* meshes
   scene.traverse((child) => {
     if (child.isMesh && child.name.startsWith('addon-')) {
-      const parts = child.name.split('-'); // ["addon", "shoes", "01"]
+      const parts = child.name.split('-');
       const category = `addon-${parts[1]}`;
 
       if (!gadgets[category]) gadgets[category] = [];
       gadgets[category].push(child);
 
-      // Hide everything by default
       child.visible = false;
     }
   });
 
-  // 🔹 Ensure all parent nodes are visible (avoid hidden parents)
   for (const key in gadgets) {
     gadgets[key].forEach((mesh) => {
       let parent = mesh.parent;
@@ -38,10 +31,8 @@ export function initGadgets(scene) {
 
   console.log('🧱 Gadget groups:', Object.keys(gadgets));
 
-  // 2️⃣ Create HUD panel if not exists
   createGadgetPanel();
 
-  // 3️⃣ Setup button listeners
   document.querySelectorAll('.btn-gadget').forEach((btn) => {
     btn.addEventListener('click', () => handleGadgetClick(btn.id));
   });
@@ -50,27 +41,17 @@ export function initGadgets(scene) {
 function handleGadgetClick(id) {
   const category = `addon-${id.replace('btn-', '')}`;
   const group = gadgets[category];
+
   if (!group || group.length === 0) return;
 
   const btn = document.getElementById(id);
-
-  // Find current visible gadget index
   const currentIndex = group.findIndex((mesh) => mesh.visible);
   const nextIndex = (currentIndex + 1) % (group.length + 1);
 
-  console.log(
-    '👉 Group found:',
-    group.map((g) => g.name),
-    'Current index:',
-    currentIndex,
-    'Next:',
-    nextIndex
-  );
+  group.forEach((mesh) => {
+    mesh.visible = false;
+  });
 
-  // Hide all gadgets of that group
-  group.forEach((mesh) => (mesh.visible = false));
-
-  // If nextIndex < group.length → show next; else all stay hidden
   if (nextIndex < group.length) {
     group[nextIndex].visible = true;
     btn.classList.add('active');
@@ -86,20 +67,38 @@ function createGadgetPanel() {
 
   panel = document.createElement('div');
   panel.id = 'gadget-panel';
-  panel.innerHTML = `
-    <button class="btn-gadget" id="btn-hoodie">Hoodie</button>
-    <button class="btn-gadget" id="btn-pants">Pants</button>
-    <button class="btn-gadget" id="btn-shoes">Shoes</button>
-    <button class="btn-gadget" id="btn-glasses">Glasses</button>
-    <button class="btn-gadget" id="btn-hats">Hats</button>  <!-- 🧢 NUEVO -->
-  `;
-  document.body.appendChild(panel);
 
-  // GSAP entrance
+  panel.innerHTML = `
+    <div class="ui-section-title">Customize</div>
+    <div class="gadget-row">
+      <button class="btn-gadget" id="btn-hoodie">Hoodie</button>
+      <button class="btn-gadget" id="btn-pants">Pants</button>
+      <button class="btn-gadget" id="btn-shoes">Shoes</button>
+      <button class="btn-gadget" id="btn-glasses">Glasses</button>
+      <button class="btn-gadget" id="btn-hats">Hats</button>
+    </div>
+  `;
+
+  movePanelToSlot();
+
   gsap.from(panel, {
-    y: 80,
+    y: 20,
     opacity: 0,
-    duration: 0.8,
+    duration: 0.5,
     ease: 'back.out(1.7)',
   });
+}
+
+function movePanelToSlot() {
+  const gadgetSlot = document.getElementById('gadget-slot');
+
+  if (gadgetSlot) {
+    gadgetSlot.appendChild(panel);
+  } else {
+    document.body.appendChild(panel);
+
+    setTimeout(() => {
+      movePanelToSlot();
+    }, 100);
+  }
 }

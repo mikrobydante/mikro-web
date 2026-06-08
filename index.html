@@ -1,24 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MiKRO 3D Character</title>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MiKRO 3D Character</title>
+</head>
 
-  <body>
-    <nav class="top-menu">
-      <div class="brand"></div>
+<body>
 
-      <div class="nav-links">
-        <a href="#about">About</a>
-        <a href="#works">Works</a>
-        <a href="#contact">Contact</a>
-      </div>
-    </nav>
+  <nav class="top-menu">
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
 
+  <section id="works" class="demo-section">
     <canvas id="canvas"></canvas>
+  </section>
 
-    <script type="module" src="/src/main.js"></script>
-  </body>
+  <section id="about" class="info-section">
+    <div class="info-card">
+      <h2>Who I Am</h2>
+      <p>
+        I'm Dante, a 3D Artist and Animator based in Mexico. I create stylized characters, animations, and interactive experiences for web, apps, and digital products.
+
+      </p>
+    </div>
+  </section>
+
+  <section id="contact" class="info-section contact-section">
+    <div class="info-card">
+      <h2>Contact</h2>
+      <p>
+        Available for freelance projects, character design,
+        3D animation and interactive avatar experiences.
+      </p>
+
+      <a class="email-link" href="mailto:soydante@gmail.com">
+        by.dante.rd@gmail.com
+      </a>
+    </div>
+  </section>
+
+  <a href="#works" class="back-to-demo" aria-label="Back to character" title="Back to character">
+    ↑
+  </a>
+
+  <script type="module" src="/src/main.js"></script>
+
+</body>
 </html>
