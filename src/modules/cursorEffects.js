@@ -4,12 +4,24 @@ import { gsap } from 'gsap';
 let bandEl = null;
 let active = false;
 
+function moveBand(clientX, clientY) {
+  if (!bandEl) return;
+
+  gsap.to(bandEl, {
+    x: clientX - bandEl.offsetWidth / 2,
+    y: clientY - bandEl.offsetHeight / 2,
+    duration: 0.18,
+    ease: 'expo.out',
+  });
+}
+
 export function initCursorBand() {
   if (bandEl) return;
 
   bandEl = document.createElement('div');
   bandEl.id = 'cursor-band';
   bandEl.innerHTML = `<span>HIT</span>`;
+
   Object.assign(bandEl.style, {
     position: 'fixed',
     top: '0',
@@ -19,7 +31,7 @@ export function initCursorBand() {
     borderRadius: '24px',
     background: 'rgba(255, 190, 150, 0.12)',
     border: '1px solid rgba(255, 190, 150, 0.45)',
-    color: '#000', // ⚫ texto negro
+    color: '#000',
     fontFamily: 'Poppins, sans-serif',
     fontWeight: '600',
     fontSize: '14px',
@@ -29,51 +41,104 @@ export function initCursorBand() {
     justifyContent: 'center',
     pointerEvents: 'none',
     opacity: '0',
-    mixBlendMode: 'normal', // ⚙️ texto legible sobre cualquier fondo
+    mixBlendMode: 'normal',
     zIndex: '9999',
     backdropFilter: 'blur(12px)',
     boxShadow: '0 0 12px rgba(255,190,150,0.25)',
-    willChange: 'transform, opacity'
+    willChange: 'transform, opacity',
   });
 
   document.body.appendChild(bandEl);
   gsap.set(bandEl, { scale: 0.9 });
 
-  // Movimiento del cursor
   window.addEventListener('mousemove', (e) => {
     if (!active) return;
-    gsap.to(bandEl, {
-      x: e.clientX - bandEl.offsetWidth / 2,
-      y: e.clientY - bandEl.offsetHeight / 2,
-      duration: 0.35,
-      ease: 'expo.out'
-    });
+    moveBand(e.clientX, e.clientY);
+  });
+
+  window.addEventListener('touchmove', (e) => {
+    if (!active) return;
+    if (!e.touches || e.touches.length === 0) return;
+
+    const touch = e.touches[0];
+    moveBand(touch.clientX, touch.clientY);
+  }, { passive: true });
+
+  window.addEventListener('pointermove', (e) => {
+    if (!active) return;
+    moveBand(e.clientX, e.clientY);
   });
 }
 
-export function showCursorBand() {
+export function showCursorBand(x = null, y = null) {
   if (!bandEl) initCursorBand();
+
   active = true;
+
+  if (x !== null && y !== null) {
+    moveBand(x, y);
+  }
+
   const span = bandEl.querySelector('span');
+
   gsap.killTweensOf([bandEl, span]);
-  gsap.to(bandEl, { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.6)' });
-  gsap.fromTo(span, { scale: 0.85, opacity: 0.6 }, { scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(1.6)' });
+  gsap.to(bandEl, {
+    opacity: 1,
+    scale: 1,
+    duration: 0.25,
+    ease: 'back.out(1.6)',
+  });
+
+  gsap.fromTo(
+    span,
+    { scale: 0.85, opacity: 0.6 },
+    { scale: 1, opacity: 1, duration: 0.25, ease: 'back.out(1.6)' }
+  );
 }
 
 export function hideCursorBand() {
+  if (!bandEl) return;
+
   active = false;
-  gsap.to(bandEl, { opacity: 0, scale: 0.9, duration: 0.25, ease: 'power2.out' });
+
+  gsap.to(bandEl, {
+    opacity: 0,
+    scale: 0.9,
+    duration: 0.2,
+    ease: 'power2.out',
+  });
 }
 
-export function flashCursorBand(text = 'HA!') {
+export function flashCursorBand(text = 'HA!', x = null, y = null) {
   if (!bandEl) return;
+
+  if (x !== null && y !== null) {
+    moveBand(x, y);
+  }
+
   const span = bandEl.querySelector('span');
   const original = span.textContent;
+
   span.textContent = text;
 
-  gsap.timeline()
-    .to(bandEl, { backgroundColor: 'rgba(255, 190, 150, 0.25)', duration: 0.08 })
-    .to(bandEl, { backgroundColor: 'rgba(255, 190, 150, 0.12)', duration: 0.25 })
-    .fromTo(span, { scale: 1 }, { scale: 1.1, duration: 0.1, yoyo: true, repeat: 1, ease: 'power1.inOut' })
-    .add(() => { span.textContent = original; });
+  gsap
+    .timeline()
+    .to(bandEl, {
+      opacity: 1,
+      scale: 1,
+      backgroundColor: 'rgba(255, 190, 150, 0.25)',
+      duration: 0.08,
+    })
+    .to(bandEl, {
+      backgroundColor: 'rgba(255, 190, 150, 0.12)',
+      duration: 0.25,
+    })
+    .fromTo(
+      span,
+      { scale: 1 },
+      { scale: 1.1, duration: 0.1, yoyo: true, repeat: 1, ease: 'power1.inOut' }
+    )
+    .add(() => {
+      span.textContent = original;
+    });
 }
