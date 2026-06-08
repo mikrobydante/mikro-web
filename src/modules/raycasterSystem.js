@@ -11,10 +11,14 @@ import {
 } from './cursorEffects.js';
 
 let scene, camera, domEl;
+
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
 let hovered = false;
+let lastClientX = 0;
+let lastClientY = 0;
+
 const triggers = {};
 
 export function initRaycaster(_scene, _camera, _domEl) {
@@ -32,6 +36,7 @@ export function initRaycaster(_scene, _camera, _domEl) {
   initCursorBand();
 
   domEl.addEventListener('pointermove', onPointerMove);
+  domEl.addEventListener('pointerdown', onPointerDown);
   domEl.addEventListener('click', onClick);
 
   domEl.addEventListener('pointerleave', resetHover);
@@ -41,30 +46,59 @@ export function initRaycaster(_scene, _camera, _domEl) {
   console.log('🧩 Raycaster initialized with triggers:', Object.keys(triggers));
 }
 
-function onClick() {
-  raycaster.setFromCamera(pointer, camera);
+function updatePointerFromEvent(event) {
+  const rect = domEl.getBoundingClientRect();
 
-  let hitName = null;
+  lastClientX = event.clientX;
+  lastClientY = event.clientY;
+
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+}
+
+function getHitName() {
+  raycaster.setFromCamera(pointer, camera);
 
   for (const key in triggers) {
     const hits = raycaster.intersectObject(triggers[key], true);
+
     if (hits.length) {
-      hitName = key;
-      break;
+      return key;
     }
   }
 
-  if (!hitName) return;
+  return null;
+}
+
+function onPointerDown(event) {
+  updatePointerFromEvent(event);
+  updateHover();
+}
+
+function onPointerMove(event) {
+  updatePointerFromEvent(event);
+  updateHover();
+}
+
+function onClick(event) {
+  updatePointerFromEvent(event);
+
+  const hitName = getHitName();
+
+  if (!hitName) {
+    resetHover();
+    return;
+  }
 
   switch (hitName) {
     case 'mesh-belly-trigger':
       playAnimationSet('laugh');
-      flashCursorBand('HA!');
+      flashCursorBand('HA!', lastClientX, lastClientY);
       break;
 
     case 'mesh-nose-trigger':
       playAnimationSet('sneeze');
-      flashCursorBand('ACHÚ!');
+      flashCursorBand('ACHÚ!', lastClientX, lastClientY);
       break;
 
     default:
@@ -74,31 +108,12 @@ function onClick() {
   resetHover();
 }
 
-function onPointerMove(event) {
-  const rect = domEl.getBoundingClientRect();
-
-  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-  updateHover();
-}
-
 function updateHover() {
-  raycaster.setFromCamera(pointer, camera);
-
-  let hitName = null;
-
-  for (const key in triggers) {
-    const hits = raycaster.intersectObject(triggers[key], true);
-    if (hits.length) {
-      hitName = key;
-      break;
-    }
-  }
+  const hitName = getHitName();
 
   if (hitName && !hovered) {
     hovered = true;
-    showCursorBand();
+    showCursorBand(lastClientX, lastClientY);
   } else if (!hitName && hovered) {
     resetHover();
   }
