@@ -8,7 +8,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { setupButtons } from './ui/buttons.js';
 import { handleButton } from './modules/buttonsMode.js';
 import { initAudio } from './modules/audioSystem.js';
-import { setupMixer, mixers, updateMixers } from './animation/mixer.js'; // ✅ incluye updateMixers
+import { setupMixer, updateMixers } from './animation/mixer.js';
 import { initGadgets } from './modules/gadgetsSystem.js';
 import { initRaycaster } from './modules/raycasterSystem.js';
 import './style.css';
@@ -43,19 +43,43 @@ initAudio(camera);
 setupButtons(handleButton);
 
 // ------------------------------------------------------
+// 👁️ HIDE CONTROLS WHEN LEAVING CHARACTER SECTION
+// ------------------------------------------------------
+function updateControlsVisibility() {
+  const controlsUI = document.querySelector('#controls-ui');
+  if (!controlsUI) return;
+
+  if (window.scrollY > window.innerHeight * 0.35) {
+    controlsUI.style.opacity = '0';
+    controlsUI.style.pointerEvents = 'none';
+    controlsUI.style.transform = 'translateX(-50%) translateY(24px)';
+  } else {
+    controlsUI.style.opacity = '1';
+    controlsUI.style.pointerEvents = 'auto';
+    controlsUI.style.transform = 'translateX(-50%) translateY(0)';
+  }
+}
+
+window.addEventListener('scroll', updateControlsVisibility);
+window.addEventListener('hashchange', updateControlsVisibility);
+window.addEventListener('load', updateControlsVisibility);
+setTimeout(updateControlsVisibility, 300);
+
+// ------------------------------------------------------
 // 🌫️ SHADOW RECEIVER FLOOR
 // ------------------------------------------------------
 const shadowGround = new THREE.Mesh(
   new THREE.PlaneGeometry(40, 40),
   new THREE.ShadowMaterial({ opacity: 0.3 })
 );
+
 shadowGround.rotation.x = -Math.PI / 2;
 shadowGround.position.y = 0;
 shadowGround.receiveShadow = true;
 scene.add(shadowGround);
 
 // ------------------------------------------------------
-// 🐣 LOAD MAIN MODEL (Pollito MVP)
+// 🐣 LOAD MAIN MODEL
 // ------------------------------------------------------
 const loader = new GLTFLoader();
 const texturePath = '/textures/atlas-pollito.jpg';
@@ -68,7 +92,6 @@ loader.load('/models/pollito-mvp-v3.glb', (gltf) => {
     if (o.isMesh) console.log('🧩 Mesh found:', o.name);
   });
 
-  // Hacer invisibles los triggers pero activos para interacción
   model.traverse((child) => {
     if (child.isMesh && child.name.endsWith('-trigger')) {
       child.visible = false;
@@ -77,7 +100,6 @@ loader.load('/models/pollito-mvp-v3.glb', (gltf) => {
     }
   });
 
-  // 🎨 APPLY TOON MATERIAL
   new THREE.TextureLoader().load(texturePath, (texture) => {
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
@@ -95,23 +117,15 @@ loader.load('/models/pollito-mvp-v3.glb', (gltf) => {
       }
     });
 
-    // ✅ ADD MODEL TO SCENE
     scene.add(model);
 
-    // 👇 Permite inspeccionar la escena desde la consola del navegador
     window.scene = scene;
     window.model = model;
 
-    // 🧠 SETUP MIXERS (body / face / mouth)
     setupMixer(gltf);
-
-    // 🎒 INIT GADGET SYSTEM
     initGadgets(model);
-
-    // 🖱️ INIT RAYCASTER SYSTEM
     initRaycaster(scene, camera, renderer.domElement);
 
-    // 🚀 START LOOP AFTER MODEL LOADS
     animate();
   });
 });
@@ -126,7 +140,6 @@ function animate() {
 
   const delta = clock.getDelta();
 
-  // ✅ Actualiza todos los mixers desde mixer.js (más limpio)
   updateMixers(delta);
 
   controls.update();

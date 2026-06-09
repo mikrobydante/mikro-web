@@ -3,7 +3,7 @@ import { gsap } from "gsap";
 
 export function setupButtons(onClick) {
   const ui = document.createElement("div");
-  ui.id = "ui";
+  ui.id = "controls-ui";
   document.body.appendChild(ui);
 
   ui.innerHTML = `
@@ -21,13 +21,14 @@ export function setupButtons(onClick) {
 
   const style = document.createElement("style");
   style.textContent = `
-    #ui {
+    #controls-ui {
       position: fixed;
       bottom: 24px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 30;
       width: min(92vw, 500px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
     }
 
     .ui-card {
@@ -137,7 +138,7 @@ export function setupButtons(onClick) {
     }
 
     @media (max-width: 600px) {
-      #ui {
+      #controls-ui {
         bottom: 10px;
         width: min(94vw, 430px);
       }
@@ -171,9 +172,8 @@ export function setupButtons(onClick) {
   const toggleBtn = ui.querySelector("#toggle-ui");
   const animationRow = ui.querySelector(".animation-row");
 
-  // Iniciar cerrado
-uiCard.classList.add("collapsed");
-toggleBtn.textContent = "Controls ▼";
+  uiCard.classList.add("collapsed");
+  toggleBtn.textContent = "Controls ▼";
 
   toggleBtn.addEventListener("click", () => {
     uiCard.classList.toggle("collapsed");

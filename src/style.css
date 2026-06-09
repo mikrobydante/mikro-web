@@ -4,9 +4,11 @@ html {
 }
 
 body {
+  margin: 0;
   overflow-x: hidden;
   background: #FFD9C0;
-  
+  font-family: Arial, sans-serif;
+  user-select: none;
 }
 
 /* Menú superior */
@@ -31,10 +33,6 @@ body {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
-.brand {
-  display: none;
-}
-
 .nav-links {
   display: flex;
   gap: 22px;
@@ -54,49 +52,46 @@ body {
   transform: translateY(-1px);
 }
 
-/* Botón flotante para regresar al personaje */
-.back-to-demo {
-  position: fixed;
-  right: 22px;
-  bottom: 22px;
-  z-index: 45;
-
-  width: 44px;
-  height: 44px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(12px);
-  border-radius: 50%;
-
-  color: #333;
-  text-decoration: none;
-  font-size: 20px;
-  font-weight: 700;
-
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.back-to-demo:hover {
-  transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.95);
-}
-
 /* Área del demo 3D */
 .demo-section {
   position: relative;
   min-height: 100vh;
   background: #FFD9C0;
+  overflow: hidden;
 }
 
 #canvas {
   display: block;
   width: 100%;
   height: 100vh;
+}
+
+/* Icono mano */
+.gesture-hint {
+  position: absolute;
+  left: 24px;
+  bottom: 140px;
+  width: 56px;
+  height: auto;
+  opacity: 0.65;
+  pointer-events: none;
+  user-select: none;
+  z-index: 20;
+  animation: gesturePulse 2s ease-in-out infinite;
+}
+
+@keyframes gesturePulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* About / Contact */
@@ -116,10 +111,8 @@ body {
   padding: 56px 42px;
 
   background: rgba(255, 235, 220, 0.85);
-
   backdrop-filter: blur(10px);
   border-radius: 30px;
-
   box-shadow: 0 10px 40px rgba(0,0,0,.05);
 
   text-align: center;
@@ -157,6 +150,65 @@ body {
   background: #333;
 }
 
+/* Iconos sociales */
+.social-links {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.social-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.social-links img {
+  width: 22px;
+  height: 22px;
+  opacity: 0.65;
+  transition: all .2s ease;
+}
+
+.social-links img:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+/* Botón volver al demo */
+.back-to-demo {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 45;
+
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+  border-radius: 50%;
+
+  color: #333;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: 700;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.back-to-demo:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* Celular */
 @media (max-width: 700px) {
   html {
     scroll-padding-top: 76px;
@@ -174,6 +226,12 @@ body {
 
   .nav-links a {
     font-size: 13px;
+  }
+
+  .gesture-hint {
+    width: 48px;
+    left: 14px;
+    bottom: 170px;
   }
 
   .back-to-demo {
@@ -201,86 +259,4 @@ body {
   .info-card p {
     font-size: 15px;
   }
-}
-
-body,
-.demo-section,
-.info-section,
-#works,
-#about,
-#contact {
-  background: #FFD9C0 !important;
-}
-
-
-/* ================================= */
-/* ICONO ROTAR PERSONAJE */
-/* ================================= */
-
-.gesture-hint {
-  position: absolute;
-
-  left: 24px;
-  bottom: 140px;
-
-  width: 56px;
-  height: auto;
-
-  opacity: 0.65;
-
-  pointer-events: none;
-  user-select: none;
-
-  z-index: 20;
-
-  animation: gesturePulse 2s ease-in-out infinite;
-}
-
-@keyframes gesturePulse {
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.08);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
-
-@media (max-width: 700px) {
-
-  .gesture-hint {
-    width: 48px;
-    left: 14px;
-    bottom: 170px;
-  }
-
-}
-
-.social-links {
-  margin-top: 18px;
-  display: flex;
-  justify-content: center;
-  gap: 14px;
-}
-
-.social-links a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.social-links img {
-  width: 22px;
-  height: 22px;
-  opacity: 0.65;
-  transition: all .2s ease;
-}
-
-.social-links img:hover {
-  opacity: 1;
-  transform: translateY(-2px);
 }
